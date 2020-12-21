@@ -45,7 +45,7 @@ http.createServer(async (req, res) => {
                 });
             }
         } else if (req.method === 'PUT') {
-            if (req.url.startsWith('/users/')) {
+            if (req.url.startsWith('/user/')) {
                 const key = req.url.split('/')[2];
                 let body = '';
                 req.on('data', (data) => {
@@ -58,7 +58,7 @@ http.createServer(async (req, res) => {
                 });
             }
         } else if (req.method === 'DELETE') {
-            if (req.url.startsWith('/users/')) {
+            if (req.url.startsWith('/user/')) {
                 const key = req.url.split('/')[2];
                 delete users[key];
                 return res.end(JSON.stringify(users));
