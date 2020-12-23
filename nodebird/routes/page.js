@@ -1,6 +1,7 @@
 const express = require('express');
 const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
 const { Post, User, Hashtag } = require('../models');
+const { findOne } = require('../models/user');
 
 const router = express.Router();
 
@@ -19,14 +20,18 @@ router.get('/profile', isLoggedIn, (req, res) => {
 router.get('/join', isNotLoggedIn, (req, res) => {
     res.render('join', { title: '회원가입 - NodeBird' });
 });
-
+// 메인 페이지
 router.get('/', async (req, res, next) => {
     try {
         const posts = await Post.findAll({
-            include: {
+            include: [{
                 model: User,
                 attributes: ['id', 'nick'],
-            },
+            }, {
+                model: User,
+                attributes: ['id', 'nick'],
+                as: 'Liker',
+            }],
             order: [['createdAt', 'DESC']],
         });
         res.render('main', {
@@ -58,6 +63,28 @@ router.get('/hashtag', async (req, res, next) => {
     } catch (error) {
         console.error(error);
         return next(error);
+    }
+});
+
+router.post('/:id/like', isLoggedIn, async (req, res, next) => {
+    try {
+        const post = await Post.findOne({ where: req.params.id });
+        await post.addLiker(req.user.id);
+        res.send('OK');
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+});
+
+router.delete('/:id/like', isLoggedIn, async (req, res, next) => {
+    try {
+        const post = await Post.findOne({ where: req.params.id });
+        await post.removeLiker(req.user.id);
+        res.send('OK');
+    } catch (err) {
+        console.error(err);
+        next(err);
     }
 });
 
