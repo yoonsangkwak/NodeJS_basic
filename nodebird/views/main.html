@@ -39,10 +39,14 @@
             {% if twit.img %}
               <div class="twit-img"><img src="{{twit.img}}" alt="섬네일"></div>
             {% endif %}
+            <!-- 좋아요 기능 미완성 -->
             {% if user %}
             <button class="like">좋아요</button>
             {% elif user %}
             <button class="unlike">좋아요 취소</button>
+            {% endif %}
+            {% if user %}
+            <button class="delete">게시글 삭제</button>
             {% endif %}
           </div>
         {% endfor %}
@@ -68,6 +72,7 @@
           });
       });
     }
+
     document.querySelectorAll('.twit-follow').forEach(function(tag) {
       tag.addEventListener('click', function() {
         const myId = document.querySelector('#my-id');
@@ -87,6 +92,7 @@
         }
       });
     });
+
     document.querySelectorAll('.twit-unfollow').forEach(function(tag) {
       tag.addEventListener('click', function() {
         const myId = document.querySelector('#my-id');
@@ -106,6 +112,7 @@
         }
       });
     });
+
     document.querySelectorAll('.like').forEach(function(tag) {
       tag.addEventListener('click', function() {
         const twitId = tag.parentNode.querySelector('.twit-id').value;
@@ -118,6 +125,7 @@
             });
       });
     });
+
     document.querySelectorAll('.unlike').forEach(function(tag) {
       tag.addEventListener('click', function() {
         const twitId = tag.parentNode.querySelector('.twit-id').value;
@@ -128,6 +136,26 @@
             .catch((err) => {
               console.error(err);
             });
+      });
+    });
+
+    document.querySelectorAll('.delete').forEach(function(tag) {
+      tag.addEventListener('click', function() {
+        const myId = document.querySelector('#my-id');
+        if (myId) {
+          const twitId = tag.parentNode.querySelector('.twit-id').value;
+          if (twitId !== myId.value) {
+            if (confirm('게시물을 삭제하시겠습니까?')) {
+              axios.delete(`/post/${twitId}`)
+                .then(() => {
+                  location.reload();
+                })
+                .catch((err) => {
+                  console.error(err);
+                });
+            }
+          }
+        }
       });
     });
   </script>
